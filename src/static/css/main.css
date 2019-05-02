@@ -4,3 +4,7 @@
 #register-form {
     margin: 25px;
 }
+
+.login-page-form {
+    max-width: 480px;
+}

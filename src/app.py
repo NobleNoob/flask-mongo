@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session
 
 from src.common.database import Database
+from src.models.blog import Blog
 from src.models.user import User
 
 app = Flask(__name__)
@@ -43,8 +44,20 @@ def register_user():
     email = request.form["email"]
     password = request.form["password"]
     User.register(email,password)
-
     return render_template("profile.html",email=session["email"])
+
+
+@app.route('/blogs/<string:user_id>')
+@app.route('/blogs')
+def page_infos(user_id=None):
+    if user_id:
+        user = User.get_by_id(user_id)
+    else:
+        user = User.get_by_email(email=session['email'])
+
+    blogs = user.get_blogs()
+    return render_template("user_blogs.html",blogs=blogs,email=user.email)
+
 
 
 if __name__ == '__main__':
