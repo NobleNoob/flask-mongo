@@ -50,15 +50,29 @@ def register_user():
 @app.route('/blogs/<string:user_id>')
 @app.route('/blogs')
 def page_infos(user_id=None):
-    if user_id:
+    if user_id is not None:
         user = User.get_by_id(user_id)
     else:
         user = User.get_by_email(email=session['email'])
-
     blogs = user.get_blogs()
-    return render_template("user_blogs.html",blogs=blogs,email=user.email)
+
+    return render_template("user_blogs.html", blogs=blogs,  email=user.email)
+
+
+app.route('/blogs/new')
+def create_new_blog():
+    pass
+
+@app.route('/posts/<string:blog_id>')
+@app.route('/posts')
+def post_infos(blog_id):
+    if blog_id:
+        blog = Blog.from_mongo(blog_id)
+        blog_data = blog.get_posts()
+
+    return render_template("post_blogs.html",blog_data=blog_data,blog_name = blog.title)
 
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=False)

@@ -15,6 +15,25 @@ class User(object):
         self._id = uuid.uuid4().hex if _id is None else _id
 
     @classmethod
+    def get_by_email(cls,email):
+        data = Database.find_one("users" , {"email":email})
+        if data is not None:
+            return cls(**data)
+
+    @classmethod
+    def get_by_id(cls,_id):
+        data = Database.find_one("users",{"_id":_id})
+        if data is not None:
+            return cls(**data)
+
+    @staticmethod
+    def login_valid(email,password):
+        user = User.get_by_email(email)
+        if user:
+            return user.password == password
+        return False
+
+    @classmethod
     def register(cls,email,password):
         user = User.get_by_email(email)
         if user is None:
@@ -25,40 +44,20 @@ class User(object):
         else:
             return False
 
-    @classmethod
-    def get_by_email(cls,email):
-        data = Database.find_one("users" , {"email":email})
-        if data is not None:
-            return data
-        return None
-
-    @classmethod
-    def get_by_id(cls,_id):
-        data = Database.find_one("users",{"_id":_id})
-        if data is not None:
-            return data
-        return None
-
-    @staticmethod
-    def login_valid(email,password):
-        user = User.get_by_email(email)
-        if user:
-            return user["password"] == password
-        return False
-
     @staticmethod
     def login(user_email):
         if user_email:
             session['email'] = user_email
 
     def get_blogs(self):
-        return Blog.find_by_author_id(self._id)
+        blogs = Blog.find_by_author_id(self._id)
+        return blogs
 
-    def new_blog(self,title,description):
+    def new_blog(self, title, description):
         blog = Blog(author=self.email,
                     title=title,
                     description=description,
-                    auth_id=self._id)
+                    author_id=self._id)
         blog.save_to_mongo()
 
     @staticmethod
@@ -66,14 +65,13 @@ class User(object):
         blog = Blog.from_mongo(blog_id)
         blog.new_post(title=title,content=content,date=date)
 
-
-
     def json(self):
         return {
-            "email": self.email,
             "_id": self._id,
+            "email": self.email,
             "password" : self.password
         }
 
     def save_to_mongo(self):
         Database.insert("users",self.json())
+

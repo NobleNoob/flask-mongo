@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    {% if posts | length > 0 %}
+    <h2>{{ blog_name }}</h2>
+    {% for blog in blog_data %}
+    <h3>{{ blog.tile }}></h3>
+        <h3>{{ blog.author }}</h3>
+        <p>{{ blog.content }}</p>
+        <hr>
+    {% endfor %}
+
+    {% else %}
+    <h4>There is still have not posts yet </h4>
+    {% endif %}
+</div>
+
+{% endblock %}
