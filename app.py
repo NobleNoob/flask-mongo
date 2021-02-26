@@ -1,7 +1,7 @@
 from src.common.database import Database
 from menu import Menu
 
-__author__ = 'jslvtr'
+__author__ = 'Allen'
 
 Database.initialize()
 
